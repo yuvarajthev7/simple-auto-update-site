@@ -1,35 +1,32 @@
-name:
+name: Deploy Static Website to GitHub Pages
 
 on:
-    push:
-        branches:
-            - main
-        workflow_dispatch:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
 
 jobs:
-    deploy:
-        runs-on: arch-latest
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
-        permissions:
-            contents: read # Allows the job to read the contents of the repository
-            pages: write # Allows the job to deploy to GitHub Pages
-            id-token: write # Allows the job to fetch the OIDC token
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout code
-                uses: actions/checkout@v4 # Step 1: This action checks out your repository code
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
 
-            - name: Setup GitHub Pages
-                uses: actions/configure-pages@v5 # Step 2: Configures GitHub Pages environment
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
 
-            - name: Upload artifact
-                uses: actions/upload-pages-artifact@v3 # Step 3: Uploads your website files as an artifact
-                with:
-            # This is the directory containing your website files relative to the repo root.
-            # Since index.html and style.css are in the root, we use '.'
-                path: '.'
-
-            - name: Deploy to GitHub Pages
-                id: deployment
-                uses: actions/deploy-pages@v4 # Step 4: Deploys the uploaded artifact to GitHub Pages
-            # This action automatically uses the token and configuration set up by configure-pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
